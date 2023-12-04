@@ -1,5 +1,6 @@
 import strutils
 import sequtils
+import tables
 import nre
 
 proc parseInput(): seq[string] =
@@ -33,4 +34,30 @@ proc part1*(): int =
     return counter
 
 proc part2*(): int =
-    return 0
+    let lines = parseInput()
+
+    let scrathpads = newTable[int, int]()
+
+    var counter = 0
+    for index, line in lines:
+        let padIndex = index + 1
+        if not scrathpads.hasKey(padIndex):
+            scrathpads[padIndex] = 1
+
+        let matches = line.findAll(re"(?<winning>(\d+( ){0,2})+)|(?<input>(\d+( ){0,2})+)")
+
+        let winning = parseLineNumbers(matches[1])
+        let mine = parseLineNumbers(matches[2])
+
+        let count = mine.countIt(winning.contains(it))
+
+        for i in padIndex + 1..padIndex + count:
+            if not scrathpads.hasKey(i):
+                scrathpads[i] = 1
+
+            scrathpads[i] += scrathpads[padIndex]
+
+    for index, value in scrathpads.pairs:
+        counter += value
+
+    return counter

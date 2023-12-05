@@ -18,10 +18,7 @@ proc part1*(): int =
     var parsedResults: Numbers = @[]
     var wasNewline = true
     var currentArray = newSeq[Ranges]()
-    for lineIndex in 0 .. input.len - 1:
-        if lineIndex <= 1:
-            continue
-
+    for lineIndex in 1 .. input.len - 1:
         let line = input[lineIndex]
         if lineIndex == input.len - 1:
             let currentLineNumbers = line.splitWhitespace().mapIt(parseInt(it))
@@ -41,22 +38,17 @@ proc part1*(): int =
         let currentLineNumbers = line.splitWhitespace().mapIt(parseInt(it))
         currentArray.add((currentLineNumbers[0], currentLineNumbers[1], currentLineNumbers[2]))
 
-    var results = newSeq[int]()
+    result = high(int)
     for seed in seeds:
         var currentIndex = seed
         for values in parsedResults:
             for items in values:
-                let sourceRange = (items[1]..(items[1] + items[2]) - 1).toSeq
-
-                let position = sourceRange.find(currentIndex)
-                if position != -1:
-                    let destinationRange = (items[0]..(items[0] + items[2]) - 1).toSeq
-                    currentIndex = destinationRange[position]
+                if currentIndex >= items[1] and currentIndex <= items[1] + items[2]:
+                    let position = (items[1] + items[2]) - currentIndex
+                    currentIndex = (items[0] + items[2]) - position
                     break
 
-        results.add(currentIndex)
-
-    return results.min()
+        result = min(result, currentIndex)
 
 proc part2*(): int =
     return 0

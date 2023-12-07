@@ -36,4 +36,13 @@ proc part1*(): int =
       result *= possibilities
 
 proc part2*(): int =
-    return 0
+    let races = parseInput()
+
+    let raceDuration = parseInt(races.mapIt(it.time).foldl($a & $b, ""))
+    let raceDistance = parseInt(races.mapIt(it.distance).foldl($a & $b, ""))
+
+    result = 0
+    for i in 1..raceDuration:
+      let distance = (raceDuration - i) * i
+      if distance > raceDistance:
+        result += 1
